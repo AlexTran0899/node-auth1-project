@@ -32,7 +32,7 @@ const User = require("./users-model")
 
 const {restricted} = require('../auth/auth-middleware')
 
-router.get('/', (req,res,next) => {
+router.get('/',restricted, (req,res,next) => {
   User.find()
   .then(users => {
     res.status(200).json(users)

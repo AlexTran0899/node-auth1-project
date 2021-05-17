@@ -27,7 +27,8 @@
     "express-session": "^1.17.1",
     "helmet": "^4.4.1",
     "knex": "^0.95.4",
-    "sqlite3": "^5.0.2"
+    "sqlite3": "^5.0.2",
+    "yup": "^0.32.9"
   },
   "repository": {
     "type": "git",

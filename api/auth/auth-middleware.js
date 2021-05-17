@@ -1,12 +1,12 @@
-/*
-  If the user does not have a session saved in the server
+const User = require("../users/users-model")
+const yup = require('yup')
 
-  status 401
-  {
-    "message": "You shall not pass!"
-  }
-*/
-exports.restricted = (req, res,next) => {
+const messageSchema = yup.object({
+  username: yup.string(),
+  password: yup.string().required("/ must be longer than 3/i").min(3, "/ must be longer than 3/i")
+})
+
+function restricted(req, res,next) {
   if(req.session.user) {
     next()
   } else {
@@ -16,16 +16,19 @@ exports.restricted = (req, res,next) => {
   }
 }
 
-/*
-  If the username in req.body already exists in the database
-
-  status 422
-  {
-    "message": "Username taken"
-  }
-*/
-function checkUsernameFree() {
-
+function checkUsernameFree(req, res,next){
+  const {username} = req.body
+  User.findBy({username})
+  .then(user => {
+    if(!user) {
+      next()
+    } else {
+      next({status: 422, message: "username taken"})
+    }
+  })
+  .catch(err => {
+    next(err)
+  })
 }
 
 /*
@@ -48,8 +51,20 @@ function checkUsernameExists() {
     "message": "Password must be longer than 3 chars"
   }
 */
-function checkPasswordLength() {
-
+async function checkPasswordLength(req, res,next) {
+  try {
+    const validate = await messageSchema.validate(req.body, { stripUnknown: true })
+    req.body = validate
+    next()
+} catch (err) {
+    next({ status: 422, message: err.message })
+}
 }
 
 // Don't forget to add these to the `exports` object so they can be required in other modules
+
+module.exports = {
+  restricted,
+  checkUsernameFree,
+  checkPasswordLength,
+}
