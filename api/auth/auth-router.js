@@ -61,3 +61,51 @@
 
  
 // Don't forget to add the router to the `exports` object so it can be required in other modules
+const router = require('express').Router()
+const User = require('../users/users-model')
+const bcrypt = require('bcryptjs')
+
+router.post('/register', (req, res, next) => {
+  const {username, password} = req.body
+  const hash = bcrypt.hashSync(password, 8)
+
+  User.add({username, password: hash})
+  .then(user => {
+    res.status(201).json({message: `welcome ${user.username}`})
+  })
+  .catch(err => {
+    next(err)
+  })
+})
+
+router.post('/login', (req,res,next) => {
+  const {username, password} = req.body
+  User.findby({username}) 
+  .then(([user]) => {
+    if(user && bcrypt.compareSync(password, user.password)) {
+      req.session.user = user
+      res.json({message: `welcomeback, ${user.username}`})
+    } else {
+       next({
+         status: 401, 
+         message: `invalid credentials`
+       })
+    }
+  })
+  .catch(err => {
+    next(err)
+  })
+})
+
+router.get('/logout', (req,res,next) => {
+  if(req.session.user) {
+    req.session.destroy(err => {
+      if(err) {
+        res.json({message: 'you cannnot leave!'})
+      } else {
+        res.json({message: 'you were never login'})
+      }
+    })
+  }
+})
+module.exports = router;
