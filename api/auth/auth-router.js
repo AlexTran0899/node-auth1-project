@@ -104,9 +104,11 @@ router.get('/logout', (req,res,next) => {
       if(err) {
         res.json({message: 'you cannnot leave!'})
       } else {
-        res.json({message: 'you were never login'})
+        res.json({message: 'logged out'})
       }
     })
+  } else {
+    res.json({message: "no session"})
   }
 })
 module.exports = router;
