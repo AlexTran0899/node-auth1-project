@@ -80,11 +80,11 @@ router.post('/register', (req, res, next) => {
 
 router.post('/login', (req,res,next) => {
   const {username, password} = req.body
-  User.findby({username}) 
+  User.findBy({username}) 
   .then(([user]) => {
     if(user && bcrypt.compareSync(password, user.password)) {
       req.session.user = user
-      res.json({message: `welcomeback, ${user.username}`})
+      res.json({message: `welcome ${user.username}`})
     } else {
        next({
          status: 401, 

@@ -11,7 +11,7 @@ function find() {
   resolves to an ARRAY with all users that match the filter condition
  */
 function findBy(filter) {
-
+  return db('users').where(filter)
 }
 
 /**
@@ -25,8 +25,8 @@ function findById(user_id) {
   resolves to the newly inserted user { user_id, username }
  */
 function add(user) {
-
+  return db('user').insert(user)
 }
 
 // Don't forget to add these to the `exports` object so they can be required in other modules
-module.exports = {find}
+module.exports = {find, findBy, add}
